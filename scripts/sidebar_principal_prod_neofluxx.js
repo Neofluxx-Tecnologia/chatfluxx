@@ -8,13 +8,11 @@
   // type: 'auto'   — não aparece no menu, executa ao carregar
   // ============================================================
   const FEATURES = [
-    { id: 'portal_disparo',    label: 'Portal Disparo',    type: 'script', url: 'https://raw.githubusercontent.com/RafaelAlcarde/alcardetech/refs/heads/main/scripts/portal_disparo.js' },
-    { id: 'template_builder',  label: 'Template Builder',  type: 'script', url: 'https://raw.githubusercontent.com/RafaelAlcarde/alcardetech/refs/heads/main/scripts/template_builder.js' },
-    { id: 'kanban',            label: 'Kanban',            type: 'script', url: 'https://raw.githubusercontent.com/RafaelAlcarde/alcardetech/refs/heads/main/scripts/kanban.js' },
-    { id: 'kpis',              label: 'KPIs',              type: 'script', url: 'https://raw.githubusercontent.com/RafaelAlcarde/alcardetech/refs/heads/main/scripts/kpis.js' },
+    { id: 'portal_disparo',    label: 'Portal Disparo',    type: 'script', url: 'https://raw.githubusercontent.com/Neofluxx-Tecnologia/chatfluxx/refs/heads/main/scripts/portal_disparo.js' },
+    { id: 'template_builder',  label: 'Template Builder',  type: 'script', url: 'https://raw.githubusercontent.com/Neofluxx-Tecnologia/chatfluxx/refs/heads/main/scripts/template_builder.js' },
+    { id: 'etiquetar_contatos',label: 'Etiquetar Contatos',type: 'auto',   url: 'https://raw.githubusercontent.com/Neofluxx-Tecnologia/chatfluxx/refs/heads/main/scripts/etiquetar_contatos.js' },
+    { id: 'anexar_imagens',    label: 'Anexar Imagens',    type: 'auto',   url: 'https://raw.githubusercontent.com/Neofluxx-Tecnologia/chatfluxx/refs/heads/main/scripts/template_anexar_imagens.js' },
     { id: 'disparo_campanha',  label: 'Disparo Campanha',  type: 'modal',  url: 'https://webhooks.neofluxx.com/form/65ae30a5-3e39-4e55-b932-44c038d009ea' },
-    { id: 'etiquetar_contatos',label: 'Etiquetar Contatos',type: 'auto',   url: 'https://raw.githubusercontent.com/RafaelAlcarde/alcardetech/refs/heads/main/scripts/etiquetar_contatos.js' },
-    { id: 'anexar_imagens',    label: 'Anexar Imagens',    type: 'auto',   url: 'https://raw.githubusercontent.com/RafaelAlcarde/alcardetech/refs/heads/main/scripts/template_anexar_imagens.js' },
   ];
 
   // ============================================================
