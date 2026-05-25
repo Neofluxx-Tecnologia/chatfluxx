@@ -196,6 +196,19 @@
     .nfxd-hist-table tr:last-child td{border-bottom:none}
     .nfxd-hist-table tr:hover td{background:var(--sf2)}
     .nfxd-hist-table tr.sel-row td{background:rgba(229,57,53,.05)}
+    .nfxd-pagination{display:flex;align-items:center;justify-content:space-between;padding:10px 4px;margin-top:8px}
+    .nfxd-page-info{font-size:11px;color:var(--tx3)}
+    .nfxd-page-btns{display:flex;gap:6px}
+    .nfxd-page-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:6px;border:1px solid var(--bd2);background:transparent;color:var(--tx2);font-size:11px;cursor:pointer;transition:all .15s;font-family:inherit}
+    .nfxd-page-btn:hover:not(:disabled){background:var(--sf2);color:var(--tx)}
+    .nfxd-page-btn:disabled{opacity:.4;cursor:not-allowed}
+    .nfxd-waba-grid{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+    .nfxd-waba-card{flex:1;min-width:120px;border:1px solid var(--bd);border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .15s;background:var(--sf);display:flex;align-items:center;gap:8px}
+    .nfxd-waba-card:hover{border-color:var(--bd2);background:var(--sf2)}
+    .nfxd-waba-card.sel{border:1.5px solid var(--ac);background:var(--adim)}
+    .nfxd-waba-icon{width:30px;height:30px;border-radius:8px;background:var(--adim);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .nfxd-waba-label{font-size:12px;font-weight:600;color:var(--tx)}
+    .nfxd-waba-sel-bar{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--adim);border:1px solid var(--agl);border-radius:7px;font-size:11px;color:var(--ac);margin-bottom:4px}
   `;
   document.head.appendChild(style);
 
@@ -203,6 +216,9 @@
   let state = {
     view: 'nova',
     step: 1,
+    tenantId: null,
+    wabaNome: null,
+    wabas: [],
     publico: null,
     template: null,
     imgUrl: '',
@@ -210,6 +226,7 @@
     templates: [],
     loadingTemplates: false,
     loadingCampanhas: false,
+    histPage: 0,
   };
 
   // ─── OVERLAY ────────────────────────────────────────────────────────────────
@@ -219,8 +236,18 @@
   document.body.appendChild(overlay);
   overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
 
-  function openModal() { applyTheme(); overlay.classList.add('open'); if (state.view === 'historico') loadCampanhas(); }
-  function closeModal() { overlay.classList.remove('open'); }
+  function openModal() { applyTheme(); overlay.classList.add('open'); nfxdLoadWabas(); }
+  function closeModal() {
+    overlay.classList.remove('open');
+    state.tenantId = null;
+    state.wabaNome = null;
+    state.wabas = [];
+    const sec = document.getElementById('nfxd-sec-waba');
+    if (sec) sec.style.display = 'none';
+    const bar = document.getElementById('nfxd-waba-sel-bar');
+    if (bar) bar.style.display = 'none';
+    nfxdReset();
+  }
 
   function applyTheme() {
     const m = document.getElementById('nfxd-modal');
@@ -265,6 +292,19 @@
 
         <div id="nfxd-view-nova">
           <div><div class="nfxd-title">Nova campanha</div><div class="nfxd-sub">Siga os passos abaixo para agendar seu disparo</div></div>
+
+          <div class="nfxd-sec" id="nfxd-sec-waba" style="display:none">
+            <div class="nfxd-sh"><div class="nfxd-sn">W</div><div class="nfxd-st">Selecione a WABA</div></div>
+            <div class="nfxd-sb">
+              <div class="nfxd-waba-grid" id="nfxd-waba-grid"></div>
+            </div>
+          </div>
+
+          <div id="nfxd-waba-sel-bar" style="display:none" class="nfxd-waba-sel-bar">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" fill="#25d366" stroke="none"/></svg>
+            <span id="nfxd-waba-sel-txt">—</span>
+            <span style="margin-left:auto;cursor:pointer;color:var(--tx3);font-size:10px" onclick="nfxdMostrarWabas()">trocar</span>
+          </div>
 
           <div class="nfxd-step-indicator" id="nfxd-steps">
             <div class="nfxd-step active" id="nfxd-si-1"><div class="nfxd-step-num">1</div>Público</div>
@@ -428,6 +468,65 @@
     `;
   }
 
+  // ─── WABA ────────────────────────────────────────────────────────────────────
+  window.nfxdLoadWabas = async function() {
+    const cfg = getConfig();
+    if (!cfg.webhookUrl || cfg.webhookUrl === 'SEU_N8N_WEBHOOK_URL') {
+      if (state.view === 'historico') loadCampanhas();
+      return;
+    }
+    try {
+      const res = await fetch(cfg.webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'list_wabas', tenant_key: CONFIG.tenantKey, payload: {} })
+      });
+      const data = await res.json().catch(() => ({}));
+      const wabas = data.wabas || data || [];
+      state.wabas = Array.isArray(wabas) ? wabas : [];
+
+      if (state.wabas.length === 1) {
+        // Seleciona automaticamente se só tem 1
+        nfxdSelWaba(state.wabas[0].id, state.wabas[0].waba_nome);
+      } else if (state.wabas.length > 1) {
+        // Mostra seletor
+        nfxdMostrarWabas();
+      }
+    } catch(e) {
+      // Se falhar, continua sem seletor (compatibilidade)
+    }
+    if (state.view === 'historico') loadCampanhas();
+  };
+
+  window.nfxdMostrarWabas = function() {
+    const sec = document.getElementById('nfxd-sec-waba');
+    const bar = document.getElementById('nfxd-waba-sel-bar');
+    const grid = document.getElementById('nfxd-waba-grid');
+    if (!sec || !grid) return;
+    sec.style.display = 'block';
+    if (bar) bar.style.display = 'none';
+    grid.innerHTML = state.wabas.map(w => `
+      <div class="nfxd-waba-card${state.tenantId === w.id ? ' sel' : ''}" onclick="nfxdSelWaba(${w.id},'${esc(w.waba_nome)}')">
+        <div class="nfxd-waba-icon">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" fill="#25d366"/></svg>
+        </div>
+        <div class="nfxd-waba-label">${esc(w.waba_nome)}</div>
+      </div>`).join('');
+  };
+
+  window.nfxdSelWaba = function(id, nome) {
+    state.tenantId = id;
+    state.wabaNome = nome;
+    const sec = document.getElementById('nfxd-sec-waba');
+    const bar = document.getElementById('nfxd-waba-sel-bar');
+    const txt = document.getElementById('nfxd-waba-sel-txt');
+    if (sec) sec.style.display = 'none';
+    if (bar && state.wabas.length > 1) { bar.style.display = 'flex'; }
+    if (txt) txt.textContent = `WABA: ${nome}`;
+    // Reseta o fluxo se trocar de WABA
+    nfxdReset();
+  };
+
   // ─── NAV ────────────────────────────────────────────────────────────────────
   window.nfxdView = function(v) {
     state.view = v;
@@ -445,6 +544,28 @@
 
   // ─── PÚBLICO ────────────────────────────────────────────────────────────────
   window.nfxdSelPub = function(label, key) {
+    if (!state.tenantId) {
+      nfxdMostrarWabas();
+      const sec = document.getElementById('nfxd-sec-waba');
+      if (sec) {
+        sec.style.display = 'block';
+        sec.style.border = '1.5px solid var(--red)';
+        sec.style.borderRadius = '10px';
+        let aviso = document.getElementById('nfxd-waba-aviso');
+        if (!aviso) {
+          aviso = document.createElement('div');
+          aviso.id = 'nfxd-waba-aviso';
+          aviso.style.cssText = 'font-size:11px;color:var(--red);margin-top:6px;padding:0 4px';
+          sec.appendChild(aviso);
+        }
+        aviso.textContent = '⚠ Selecione uma WABA para continuar';
+        setTimeout(() => {
+          sec.style.border = '1px solid var(--bd)';
+          if (aviso) aviso.textContent = '';
+        }, 2500);
+      }
+      return;
+    }
     state.publico = { label, key };
     state.template = null;
     state.step = 2;
@@ -478,7 +599,7 @@
       const res = await fetch(cfg.webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'list_templates', tenant_key: CONFIG.tenantKey, payload: {} })
+        body: JSON.stringify({ action: 'list_templates', tenant_key: CONFIG.tenantKey, tenant_id: state.tenantId, payload: {} })
       });
       const data = await res.json().catch(() => ({}));
       const templates = (data.data || data.templates || []).filter(t => t.status === 'APPROVED');
@@ -610,6 +731,7 @@
         body: JSON.stringify({
           action: 'list_images',
           tenant_key: CONFIG.tenantKey,
+          tenant_id: state.tenantId,
           payload: {}
         })
       });
@@ -793,6 +915,7 @@
         body: JSON.stringify({
           action: 'create_campanha',
           tenant_key: CONFIG.tenantKey,
+          tenant_id: state.tenantId,
           payload: {
             nome,
             tipo: state.publico.key,
@@ -801,6 +924,7 @@
             template_id: state.template.id,
             url_image: state.imgUrl || null,
             dt_disparo: `${data}T${hora}:00`,
+            waba_nome: state.wabaNome || null,
           }
         })
       });
@@ -832,6 +956,7 @@
         body: JSON.stringify({
           action: 'list_campanhas',
           tenant_key: CONFIG.tenantKey,
+          tenant_id: state.tenantId,
           payload: {}
         })
       });
@@ -860,6 +985,11 @@
       return;
     }
 
+    const PAGE = 10;
+    const totalPages = Math.ceil(rows.length / PAGE);
+    if (state.histPage >= totalPages) state.histPage = totalPages - 1;
+    const pageRows = rows.slice(state.histPage * PAGE, (state.histPage + 1) * PAGE);
+
     const badgeClass = { agendada: 'nfxd-badge-ag', processando: 'nfxd-badge-pr', executada: 'nfxd-badge-ok', erro: 'nfxd-badge-er' };
     container.innerHTML = `
       <div class="nfxd-del-bar" id="nfxd-del-bar">
@@ -875,7 +1005,7 @@
           <th style="text-align:center;vertical-align:middle;padding:6px 8px"><input type="checkbox" class="nfxd-cb-inp" id="nfxd-cb-all" onclick="nfxdToggleAll(this)" style="display:block;margin:0 auto"/></th>
           <th>Campanha</th><th>Público</th><th>Template</th><th>Criado em</th><th>Agendado para</th><th>Status</th>
         </tr></thead>
-        <tbody>${rows.map(r => {
+        <tbody>${pageRows.map(r => {
           const dt = r.dt_disparo ? new Date(r.dt_disparo).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', day:'2-digit', month:'2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit' }) : '—';
           const bc = badgeClass[r.status] || 'nfxd-badge-ag';
           return `<tr id="nfxd-row-${r.id}">
@@ -888,8 +1018,21 @@
             <td><span class="nfxd-badge ${bc}">${esc(r.status || '—')}</span></td>
           </tr>`;
         }).join('')}</tbody>
-      </table>`;
+      </table>
+      ${totalPages > 1 ? `
+      <div class="nfxd-pagination">
+        <span class="nfxd-page-info">Página ${state.histPage + 1} de ${totalPages} &bull; ${total} campanhas</span>
+        <div class="nfxd-page-btns">
+          <button class="nfxd-page-btn" onclick="nfxdHistPage(${state.histPage - 1})" ${state.histPage === 0 ? 'disabled' : ''}>← Anterior</button>
+          <button class="nfxd-page-btn" onclick="nfxdHistPage(${state.histPage + 1})" ${state.histPage >= totalPages - 1 ? 'disabled' : ''}>Próximo →</button>
+        </div>
+      </div>` : ''}`;
   }
+
+  window.nfxdHistPage = function(page) {
+    state.histPage = page;
+    renderHistorico();
+  };
 
   window.nfxdToggleAll = function(cb) {
     document.querySelectorAll('.nfxd-row-cb').forEach(c => {
@@ -948,6 +1091,7 @@
         body: JSON.stringify({
           action: 'delete_campanha',
           tenant_key: CONFIG.tenantKey,
+          tenant_id: state.tenantId,
           payload: { ids }
         })
       });
