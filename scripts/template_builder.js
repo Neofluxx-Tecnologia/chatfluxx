@@ -769,8 +769,7 @@
 
   window.nfxRmBtn = function(i) { buttons.splice(i,1); renderBtns(); updatePreview(); };
 
-  window.nfxClear = function() {
-    if (!confirm('Limpar o formulário?')) return;
+  function nfxDoClear() {
     ['nfx-name','nfx-body','nfx-foot','nfx-hval'].forEach(id=>{ const el=document.getElementById(id); if(el){ el.value=''; el.style.borderColor=''; } });
     buttons=[]; varExamples={}; varType='none';
     renderBtns();
@@ -778,6 +777,48 @@
     window.nfxHdr('none', document.querySelector('.nfx-tt'));
     ['nfx-var-warn','nfx-var-pos-err','nfx-name-err'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
     updatePreview();
+  }
+
+  function nfxShowModal({ title, message, confirmLabel, cancelLabel, onConfirm, onCancel, type }) {
+    const existing = document.getElementById('nfx-custom-modal-ov');
+    if (existing) existing.remove();
+    const tc_ = () => document.getElementById('nfx-modal')?.classList.contains('dark') ? 'dark' : 'light';
+    const iconMap = {
+      success: '<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#25d366" stroke-width="2.5"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      confirm: '<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="var(--amb)" stroke-width="2.5"><path d="M12 9v4M12 17h.01" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="10"/></svg>',
+      error:   '<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="var(--red)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    };
+    const bgMap = { success: 'rgba(37,211,102,.1)', confirm: 'rgba(245,166,35,.1)', error: 'rgba(229,57,53,.1)' };
+    const ov = document.createElement('div');
+    ov.id = 'nfx-custom-modal-ov';
+    ov.style.cssText = 'display:flex;position:fixed;inset:0;z-index:200000;background:rgba(0,0,0,.65);align-items:center;justify-content:center';
+    ov.innerHTML = `
+      <div class="${tc_()}" style="width:380px;max-width:94vw;border-radius:12px;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--sf,#fff);color:var(--tx,#1a1a2e);--bd:#e2e5ea;--sf:#fff;--sf2:#f0f2f5;--tx:#1a1a2e;--tx2:#5a6170;--ac:#25d366;--adim:rgba(37,211,102,.1);--agl:rgba(37,211,102,.3);--red:#e53935;--amb:#f5a623;">
+        <div style="padding:20px 20px 8px;display:flex;align-items:center;gap:12px">
+          <div style="width:40px;height:40px;border-radius:50%;background:${bgMap[type||'success']};display:flex;align-items:center;justify-content:center;flex-shrink:0">${iconMap[type||'success']}</div>
+          <div style="font-size:14px;font-weight:600">${title}</div>
+        </div>
+        <div style="padding:4px 20px 16px;font-size:12px;color:var(--tx2,#5a6170);line-height:1.6">${message}</div>
+        <div style="padding:12px 20px;border-top:1px solid var(--bd,#e2e5ea);display:flex;gap:8px;justify-content:flex-end">
+          ${cancelLabel ? `<button id="nfx-cm-cancel" style="padding:7px 14px;border-radius:7px;border:1px solid var(--bd,#e2e5ea);background:transparent;color:var(--tx2,#5a6170);font-size:12px;cursor:pointer;font-family:inherit">${cancelLabel}</button>` : ''}
+          <button id="nfx-cm-confirm" style="padding:7px 16px;border-radius:7px;border:none;background:var(--ac,#25d366);color:#000;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">${confirmLabel||'OK'}</button>
+        </div>
+      </div>`;
+    document.body.appendChild(ov);
+    document.getElementById('nfx-cm-confirm').onclick = () => { ov.remove(); onConfirm && onConfirm(); };
+    const cancelBtn = document.getElementById('nfx-cm-cancel');
+    if (cancelBtn) cancelBtn.onclick = () => { ov.remove(); onCancel && onCancel(); };
+  }
+
+  window.nfxClear = function() {
+    nfxShowModal({
+      title: 'Limpar formulário',
+      message: 'Deseja limpar todos os campos? Os dados preenchidos serão perdidos.',
+      confirmLabel: 'Sim, limpar',
+      cancelLabel: 'Não',
+      type: 'confirm',
+      onConfirm: nfxDoClear
+    });
   };
 
   window.nfxSubmit = async function() {
@@ -840,8 +881,24 @@
         result = await n8nRequest('create_template', payload);
       }
 
-      alert(`✓ Template "${name}" enviado!\nID: ${result.template_id || result.id || '-'}\nStatus: ${result.status || 'PENDING'}`);
-      window.nfxClear();
+      const tplId = result.template_id || result.id || '-';
+      const tplStatus = result.status || 'PENDING';
+      nfxShowModal({
+        title: 'Template enviado!',
+        message: `<strong>${name}</strong> foi enviado para aprovação da Meta.<br><br><span style="font-size:11px;color:var(--tx3,#9aa0ad)">ID: ${tplId} &nbsp;•&nbsp; Status: ${tplStatus}</span>`,
+        confirmLabel: 'OK',
+        type: 'success',
+        onConfirm: () => {
+          nfxShowModal({
+            title: 'Limpar formulário?',
+            message: 'Deseja limpar os campos para criar um novo template?',
+            confirmLabel: 'Sim, limpar',
+            cancelLabel: 'Não',
+            type: 'confirm',
+            onConfirm: nfxDoClear
+          });
+        }
+      });
     } catch(e) {
       alert(`✗ Erro ao enviar: ${e.message}`);
     } finally {
