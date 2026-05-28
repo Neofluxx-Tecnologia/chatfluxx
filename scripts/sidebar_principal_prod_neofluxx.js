@@ -1,3 +1,4 @@
+<script>
 (function () {
   'use strict';
 
@@ -6,13 +7,14 @@
   // type: 'script' — aparece no menu, executa ao clicar
   // type: 'modal'  — aparece no menu, abre iframe ao clicar
   // type: 'auto'   — não aparece no menu, executa ao carregar
+  // adminOnly: true — só aparece para administradores
   // ============================================================
   const FEATURES = [
-    { id: 'portal_disparo',    label: 'Portal Disparo',    type: 'script', url: 'https://raw.githubusercontent.com/Neofluxx-Tecnologia/chatfluxx/refs/heads/main/scripts/portal_disparo.js' },
-    { id: 'template_builder',  label: 'Template Builder',  type: 'script', url: 'https://raw.githubusercontent.com/Neofluxx-Tecnologia/chatfluxx/refs/heads/main/scripts/template_builder.js' },
-    { id: 'etiquetar_contatos',label: 'Etiquetar Contatos',type: 'auto',   url: 'https://raw.githubusercontent.com/Neofluxx-Tecnologia/chatfluxx/refs/heads/main/scripts/etiquetar_contatos.js' },
-    { id: 'anexar_imagens',    label: 'Anexar Imagens',    type: 'auto',   url: 'https://raw.githubusercontent.com/Neofluxx-Tecnologia/chatfluxx/refs/heads/main/scripts/template_anexar_imagens.js' },
-    { id: 'disparo_campanha',  label: 'Disparo Campanha',  type: 'modal',  url: 'https://webhooks.neofluxx.com/form/65ae30a5-3e39-4e55-b932-44c038d009ea' },
+    { id: 'portal_disparo',    label: 'Portal Disparo',    type: 'script', adminOnly: true,  url: 'https://raw.githubusercontent.com/Neofluxx-Tecnologia/chatfluxx/refs/heads/main/scripts/portal_disparo.js' },
+    { id: 'template_builder',  label: 'Template Builder',  type: 'script', adminOnly: true,  url: 'https://raw.githubusercontent.com/Neofluxx-Tecnologia/chatfluxx/refs/heads/main/scripts/template_builder.js' },
+    { id: 'disparo_campanha',  label: 'Disparo Campanha',  type: 'modal',  adminOnly: false, url: 'https://webhooks.neofluxx.com/form/65ae30a5-3e39-4e55-b932-44c038d009ea' },
+    { id: 'etiquetar_contatos',label: 'Etiquetar Contatos',type: 'auto',   adminOnly: false, url: 'https://raw.githubusercontent.com/Neofluxx-Tecnologia/chatfluxx/refs/heads/main/scripts/etiquetar_contatos.js' },
+    { id: 'anexar_imagens',    label: 'Anexar Imagens',    type: 'auto',   adminOnly: false, url: 'https://raw.githubusercontent.com/Neofluxx-Tecnologia/chatfluxx/refs/heads/main/scripts/template_anexar_imagens.js' },
   ];
 
   // ============================================================
@@ -25,6 +27,21 @@
   function getAccountId() {
     const m = location.pathname.match(/accounts\/(\d+)/);
     return m ? m[1] : null;
+  }
+
+  // Pega o role do usuário logado via Vue store
+  function getUserRole() {
+    try {
+      const app   = document.querySelector('#app')?.__vue_app__;
+      const store = app?.config?.globalProperties?.$store;
+      const user  = store?.state?.auth?.currentUser;
+      const accountId = getAccountId();
+      if (!user || !accountId) return 'agent';
+      const account = user.accounts.find(function(a) { return a.id === parseInt(accountId); });
+      return account?.role || 'agent';
+    } catch (e) {
+      return 'agent'; // fallback seguro
+    }
   }
 
   // Busca permissões do tenant no Supabase
@@ -57,28 +74,22 @@
   let permissions = {};
   let permissionsLoaded = false;
 
-  function isAllowed(featureId) {
+  function isAllowed(feature) {
     if (!permissionsLoaded) return false;
-    if (!(featureId in permissions)) return true;
-    return permissions[featureId] === true;
+    if (feature.adminOnly && getUserRole() !== 'administrator') return false;
+    if (!(feature.id in permissions)) return true;
+    return permissions[feature.id] === true;
   }
 
   async function init() {
     injectModalStyles();
-
-    // Aguarda o sidebar estar disponível antes de buscar permissões
     await waitForSidebar();
-
-    // Busca permissões
     const perms = await fetchPermissions();
     if (perms) { permissions = perms; permissionsLoaded = true; }
-
-    // Só injeta o sidebar depois das permissões estarem prontas
     injectSidebar();
     runAutoFeatures();
   }
 
-  // Aguarda o sidebar estar disponível no DOM
   function waitForSidebar() {
     return new Promise(function(resolve) {
       function check() {
@@ -93,9 +104,8 @@
     });
   }
 
-  // Executa automaticamente todas as features do tipo 'auto'
   async function runAutoFeatures() {
-    const autoFeatures = FEATURES.filter(function(f) { return f.type === 'auto' && isAllowed(f.id); });
+    const autoFeatures = FEATURES.filter(function(f) { return f.type === 'auto' && isAllowed(f); });
     for (var i = 0; i < autoFeatures.length; i++) {
       await loadAndRun(autoFeatures[i]);
     }
@@ -225,14 +235,11 @@
       <div id="nfx-submenu"></div>
     `;
 
-    // Verifica se há pelo menos uma feature permitida para esse cliente
-    const visibleFeatures = FEATURES.filter(function(f) { return f.type !== 'auto' && isAllowed(f.id); });
+    const visibleFeatures = FEATURES.filter(function(f) { return f.type !== 'auto' && isAllowed(f); });
     if (visibleFeatures.length === 0) return;
 
-    // Monta apenas features visíveis no menu (script e modal) e permitidas
     const submenu = root.querySelector('#nfx-submenu');
     visibleFeatures.forEach(function(feature) {
-
       const item = document.createElement('div');
       item.className = 'nfx-item';
       item.innerHTML = `
@@ -321,3 +328,4 @@
   }
 
 })();
+</script>
