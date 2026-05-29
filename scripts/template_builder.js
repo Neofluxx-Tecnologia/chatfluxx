@@ -1133,6 +1133,7 @@
     const sm={APPROVED:'Aprovado',PENDING:'Pendente',REJECTED:'Rejeitado',PAUSED:'Pausado'};
     const sc={APPROVED:'AP',PENDING:'PE',REJECTED:'RE',PAUSED:'PA'};
     const bc=(t.components||[]).find(c=>c.type==='BODY');
+    const fullText = bc ? bc.text : '';
     const prev=bc?esc(bc.text).substring(0,80)+(bc.text.length>80?'...':''):'—';
     const reason=t.rejected_reason&&t.rejected_reason!=='NONE'?`<div class="nfx-rr">✗ Motivo: ${esc(t.rejected_reason)}</div>`:'';
     const safeName = esc(t.name).replace(/'/g,"\\'");
@@ -1141,7 +1142,7 @@
       <div class="nfx-ti">
         <div class="nfx-tn">${esc(t.name)}</div>
         <div class="nfx-tm">${esc(t.category)} • ${esc(t.language)}</div>
-        <div class="nfx-tm" style="margin-top:3px;font-size:10px">${prev}</div>
+        <div class="nfx-tm" style="margin-top:3px;font-size:10px" title="${esc(fullText)}">${prev}</div>
         ${reason}
       </div>
       <span class="nfx-sb2 nfx-${sc[t.status]||'PA'}">${sm[t.status]||t.status}</span>
