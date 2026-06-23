@@ -921,7 +921,7 @@
   };
 
   function renderHistorico() {
-    const rows = state.campanhas;
+    const rows = [...state.campanhas].sort((a, b) => new Date(a.dt_disparo) - new Date(b.dt_disparo));
     const total = rows.length;
     const ok = rows.filter(r => r.status === 'executada').length;
     const ag = rows.filter(r => r.status === 'agendada').length;
