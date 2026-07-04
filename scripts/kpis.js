@@ -6,7 +6,7 @@
   const BTN_ID       = 'neo-kpi-fab';
   const PANEL_ID     = 'neo-kpi-panel';
   const GRAPH_VER    = 'v25.0';
-  const KPI_VERSION  = 'v2.4';
+  const KPI_VERSION  = 'v2.5';
 
   // Tarifa SERVICE futura (out/2026) — mesma que UTILITY
   const SERVICE_FUTURE_PRICE = 0.0068;
@@ -1280,10 +1280,8 @@
     panelState.pricingData = null;
     // wabaList e selectedWabaIdx mantidos — evita reconsultar o Supabase
 
-    // Navega via SPA sem reload
-    const accountId = getAccountId();
-    history.pushState({}, '', `/app/accounts/${accountId}/conversations`);
-    window.dispatchEvent(new PopStateEvent('popstate'));
+    // Não navega nem dispara popstate — deixa o Chatwoot na URL atual
+    // para evitar re-render do sidebar que destrói o menu Neofluxx Studio
   };
 
   const onEscClose = (e) => { if (e.key === 'Escape') closePanel(); };
