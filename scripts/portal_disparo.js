@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const PORTAL_VERSION = 'v1.0';
+  const PORTAL_VERSION = 'v1.1';
 
   
 
@@ -1101,6 +1101,7 @@
     state.template = null;
     state.imgUrl = '';
     state.step = 1;
+    state.templateParams = [];
     ['promo','conf','cortesia'].forEach(k => document.getElementById('nfxd-pub-' + k)?.classList.remove('sel'));
     ['nfxd-sec-tpl','nfxd-sec-img','nfxd-sec-agendar','nfxd-actions'].forEach(id => {
       const el = document.getElementById(id);
@@ -1110,6 +1111,10 @@
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
+    const varMap = document.getElementById('nfxd-var-map');
+    if (varMap) { varMap.style.display = 'none'; }
+    const varRows = document.getElementById('nfxd-var-rows');
+    if (varRows) { varRows.innerHTML = ''; }
     const imgPrev = document.getElementById('nfxd-img-preview');
     if (imgPrev) { imgPrev.innerHTML = ''; imgPrev.style.display = 'none'; }
     const imgGrid = document.getElementById('nfxd-img-grid-container');
