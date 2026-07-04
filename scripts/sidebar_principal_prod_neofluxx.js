@@ -9,7 +9,7 @@
   // adminOnly: true — só aparece para administradores
   // ============================================================
   const FEATURES = [
-    { id: 'portal_disparo',     label: 'Portal Disparo',         type: 'script', adminOnly: true,  url: 'https://raw.githubusercontent.com/Neofluxx-Tecnologia/chatfluxx/refs/heads/main/scripts/portal_disparo.js' },
+    { id: 'portal_disparo',     label: 'Portal Campanhas',       type: 'script', adminOnly: true,  url: 'https://raw.githubusercontent.com/Neofluxx-Tecnologia/chatfluxx/refs/heads/main/scripts/portal_disparo.js' },
     { id: 'template_builder',   label: 'Template Builder',       type: 'script', adminOnly: true,  url: 'https://raw.githubusercontent.com/Neofluxx-Tecnologia/chatfluxx/refs/heads/main/scripts/template_builder.js' },
     { id: 'kpis',               label: 'Meta Insights',          type: 'script', adminOnly: true,  url: 'https://raw.githubusercontent.com/Neofluxx-Tecnologia/chatfluxx/refs/heads/main/scripts/kpis.js' },
     { id: 'disparo_campanha',   label: 'Disparo Campanha',       type: 'modal',  adminOnly: true,  url: 'https://webhooks.neofluxx.com/form/65ae30a5-3e39-4e55-b932-44c038d009ea' },
