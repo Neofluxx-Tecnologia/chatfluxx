@@ -6,7 +6,7 @@
   const BTN_ID       = 'neo-kpi-fab';
   const PANEL_ID     = 'neo-kpi-panel';
   const GRAPH_VER    = 'v25.0';
-  const KPI_VERSION  = 'v2.6';
+  const KPI_VERSION  = 'v2.7';
 
   // Tarifa SERVICE futura (out/2026) — mesma que UTILITY
   const SERVICE_FUTURE_PRICE = 0.0068;
@@ -1342,10 +1342,8 @@
 
   // Expõe abertura para o menu Neofluxx
   window.nfx_kpis_open = () => {
-    if (!location.pathname.includes(KPI_ROUTE)) {
-      history.pushState({}, '', kpiPath());
-      window.dispatchEvent(new PopStateEvent('popstate'));
-      tick();
+    if (!document.getElementById(PANEL_ID)) {
+      mountPanel();
     }
   };
 
