@@ -2,6 +2,12 @@
   'use strict';
 
   const STORAGE_KEY = 'neofluxx_waba_config';
+  const VERSION = 'v2.2';
+  const SVG_IMG   = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>';
+  const SVG_VIDEO = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 10l6-3v10l-6-3"/></svg>';
+  const SVG_DOC   = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>';
+  const SVG_REPLY = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a4 4 0 010 8h-1"/></svg>';
+  const SVG_LINK  = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg>';
 
   const N8N_CONFIG = {
     webhookUrl: 'https://webhooks.neofluxx.com/webhook/template-builder',
@@ -85,6 +91,9 @@
     .nfx-btc{background:rgba(79,142,247,.15);color:var(--bl);border:1px solid rgba(79,142,247,.3)}
     .nfx-bdel{width:20px;height:20px;border-radius:4px;border:1px solid var(--bd2);background:transparent;color:var(--tx3);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;padding:0;line-height:1}
     .nfx-bdel:hover{background:rgba(255,94,94,.1);border-color:var(--red);color:var(--red)}
+    .nfx-bact{width:20px;height:20px;border-radius:4px;border:1px solid var(--bd2);background:transparent;color:var(--tx3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;padding:0}
+    .nfx-bact:hover:not(:disabled){background:var(--sf3);color:var(--tx)}
+    .nfx-bact:disabled{opacity:.3;cursor:not-allowed}
     .nfx-abr{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
     .nfx-ab{display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:7px;border:1px solid var(--bd2);background:transparent;color:var(--tx2);font-size:11px;cursor:pointer;transition:all .15s}
     .nfx-ab:hover{background:var(--sf2);color:var(--tx)}
@@ -96,30 +105,27 @@
     .nfx-bp{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:7px;background:var(--ac);border:none;color:#000;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit}
     .nfx-bp:hover:not(:disabled){background:#1db954;box-shadow:0 0 14px var(--agl)}
     .nfx-bp:disabled{opacity:.6;cursor:not-allowed}
-    .nfx-bs{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:7px;border:1px solid var(--bd2);background:transparent;color:var(--tx2);font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit}
+    .nfx-bs{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:7px;border:1px solid var(--bd2);background:transparent;color:var(--tx2);font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap;flex-shrink:0}
     .nfx-bs:hover{background:var(--sf2);color:var(--tx)}
     #nfx-preview{background:var(--sf);border-left:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden}
     .nfx-ph{padding:12px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
     #nfx-pbody{flex:1;padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
-    .nfx-phone{width:100%;max-width:228px;margin:0 auto;background:#efeae2;border-radius:18px;overflow:hidden;border:1px solid #d4c9b8}
+    .nfx-phone{width:100%;max-width:228px;margin:0 auto;background:#fff;border-radius:20px;overflow:hidden;border:1px solid #e4e4e4}
     .nfx-pbar{background:#075e54;padding:10px 12px;display:flex;align-items:center;justify-content:center}
     .nfx-pbar-title{font-size:12px;font-weight:600;color:#fff;text-align:center}
     .nfx-pbar-sub{font-size:9px;color:rgba(255,255,255,.7);text-align:center;margin-top:1px}
-    .nfx-pchat{padding:10px;min-height:150px;background:#efeae2;background-image:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000' fill-opacity='0.03'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E")}
-    .nfx-bub{background:#fff;border-radius:0 8px 8px 8px;padding:8px 10px;max-width:95%;box-shadow:0 1px 2px rgba(0,0,0,.1)}
-    .nfx-bub.nfx-has-btns{border-radius:0 8px 0 0;box-shadow:none}
+    .nfx-pchat{padding:14px 10px;min-height:150px;background:#fff}
+    .nfx-bub{background:#f7f7f7;border:1px solid #ececec;border-radius:12px;overflow:hidden}
+    .nfx-btxt{padding:8px 10px}
     .nfx-wt{font-size:11px;color:#111;line-height:1.5}
     .nfx-vh{background:rgba(37,211,102,.15);color:#128c7e;border-radius:3px;padding:0 3px;font-family:monospace;font-size:10px}
     .nfx-wfr{margin-top:4px;display:flex;justify-content:flex-end;font-size:9px;color:#8696a0;gap:3px;align-items:center}
-    .nfx-wht{margin-bottom:6px}
-    .nfx-whtxt{font-size:13px;font-weight:600;color:#111;margin-bottom:4px}
-    .nfx-whm{width:100%;border-radius:6px;overflow:hidden;margin-bottom:6px}
-    .nfx-whm img{width:100%;height:auto;display:block;max-height:160px;object-fit:cover}
-    .nfx-whm-ph{width:100%;height:80px;background:#d0c9be;display:flex;align-items:center;justify-content:center;font-size:24px}
+    .nfx-wht{font-size:13px;font-weight:600;color:#111;margin-bottom:4px}
+    .nfx-whm{width:100%;height:120px;background:#eee}
+    .nfx-whm img{width:100%;height:100%;display:block;object-fit:cover}
+    .nfx-whm-ph{width:100%;height:100%;background:#eee;display:flex;align-items:center;justify-content:center}
     .nfx-wft{border-top:1px solid rgba(0,0,0,.08);margin-top:6px;padding-top:5px;font-size:10px;color:#667781}
-    .nfx-wb{width:100%;background:#fff;border:none;border-top:1px solid #e9e9e9;padding:8px;text-align:center;font-size:11px;color:#00a5f4;cursor:default;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;box-sizing:border-box;border-radius:0}
-    .nfx-wb:last-child{border-radius:0 0 8px 8px}
-    .nfx-pbtns-wrap{max-width:95%;background:#fff;border-radius:0 0 8px 8px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.1)}
+    .nfx-wb{width:100%;background:transparent;border:none;border-top:1px solid #e4e4e4;padding:9px 8px;text-align:center;font-size:12px;font-weight:500;color:#00a884;cursor:default;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;box-sizing:border-box}
     .nfx-ve{display:flex;align-items:center;gap:6px;padding:0;background:transparent;border:none;border-radius:0}
     .nfx-vk{font-family:monospace;font-size:10px;color:var(--ac);white-space:nowrap;min-width:32px}
     .nfx-ve input{flex:1;font-size:11px;padding:2px 6px;border:1px solid var(--bd);border-radius:5px;background:var(--sf);color:var(--tx);font-family:inherit;outline:none;transition:border .15s;width:100%;box-sizing:border-box}
@@ -136,19 +142,26 @@
     .nfx-tc{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;display:flex;align-items:flex-start;gap:12px;transition:border .15s}
     .nfx-tc.selected{border-color:var(--ac);background:var(--adim)}
     .nfx-tc-cb{width:16px;height:16px;cursor:pointer;accent-color:var(--ac);flex-shrink:0;margin-top:2px}
-    .nfx-del-bar{display:none;align-items:center;gap:10px;padding:8px 12px;background:rgba(229,57,53,.07);border:1px solid rgba(229,57,53,.25);border-radius:8px}
-    .nfx-del-bar.visible{display:flex}
-    .nfx-del-info{font-size:12px;color:var(--red);font-weight:500;flex:1}
+    .nfx-del-bar{display:none;align-items:center;gap:10px;padding:8px 12px;background:var(--sf2);border:1px solid var(--bd);border-radius:8px}
+    .nfx-del-bar.visible{display:flex;position:sticky;top:0;z-index:5}
+    .nfx-del-info{font-size:12px;color:var(--tx2);font-weight:500;flex:1}
     .nfx-del-cancel{padding:5px 12px;border-radius:6px;border:1px solid var(--bd2);background:transparent;color:var(--tx2);font-size:11px;cursor:pointer}
-    .nfx-del-cancel:hover{background:var(--sf2);color:var(--tx)}
+    .nfx-del-cancel:hover{background:var(--sf3);color:var(--tx)}
     .nfx-del-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:6px;border:none;background:var(--red);color:#fff;font-size:11px;font-weight:600;cursor:pointer}
     .nfx-del-btn:hover:not(:disabled){opacity:.85}
     .nfx-del-btn:disabled{opacity:.6;cursor:not-allowed}
+    .nfx-edit-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:6px;border:none;background:var(--ac);color:#000;font-size:11px;font-weight:600;cursor:pointer}
+    .nfx-edit-btn:hover{opacity:.85}
     #nfx-del-ov{display:none;position:fixed;inset:0;z-index:100002;background:rgba(0,0,0,.65);align-items:center;justify-content:center}
     #nfx-del-ov.open{display:flex}
     #nfx-del-m{width:380px;max-width:94vw;border-radius:12px;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
     #nfx-del-m.light{background:#fff;color:#1a1a2e;--bd:#e2e5ea;--sf2:#f0f2f5;--tx:#1a1a2e;--tx2:#5a6170;--red:#e53935}
     #nfx-del-m.dark{background:#17171b;color:#f0f0f5;--bd:#2a2a35;--sf2:#1e1e24;--tx:#f0f0f5;--tx2:#9090a8;--red:#ff5e5e}
+    #nfx-tplprev-ov{display:none;position:fixed;inset:0;z-index:100003;background:rgba(0,0,0,.65);align-items:center;justify-content:center}
+    #nfx-tplprev-ov.open{display:flex}
+    #nfx-tplprev-m{width:300px;max-width:94vw;border-radius:12px;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;padding:14px}
+    .nfx-tc-eye{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:7px;border:1px solid var(--bd2);background:transparent;color:var(--tx2);cursor:pointer;flex-shrink:0}
+    .nfx-tc-eye:hover{background:var(--sf3);color:var(--tx)}
     .nfx-ti{flex:1}
     .nfx-tn{font-size:13px;font-weight:600;color:var(--tx)}
     .nfx-tm{font-size:11px;color:var(--tx2);margin-top:2px}
@@ -157,7 +170,7 @@
     .nfx-PE{background:rgba(245,166,35,.12);color:var(--amb);border:1px solid rgba(245,166,35,.3)}
     .nfx-RE{background:rgba(255,94,94,.1);color:var(--red);border:1px solid rgba(255,94,94,.3)}
     .nfx-PA{background:var(--sf3);color:var(--tx3);border:1px solid var(--bd2)}
-    .nfx-ltb{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+    .nfx-ltb{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;position:relative}
     .nfx-ld{text-align:center;color:var(--tx3);font-size:12px;padding:24px}
     .nfx-rr{margin-top:6px;padding:6px 8px;border-radius:6px;background:rgba(255,94,94,.08);border:1px solid rgba(255,94,94,.2);font-size:10px;color:var(--red);line-height:1.5}
 
@@ -185,6 +198,8 @@
   let tenantId    = null;
   let wabaNome    = null;
   let wabas       = [];
+  let _loadedTemplates = [];
+  window._nfxEditMode  = { active:false, templateId:null, name:null, originalHeader:null };
 
   function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function tc()   { return isDark() ? 'dark' : 'light'; }
@@ -196,12 +211,6 @@
 
   function getConfig() {
     return Object.assign({}, N8N_CONFIG, JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'));
-  }
-
-  function saveConfig(next) {
-    config = Object.assign({}, N8N_CONFIG, next || {});
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
-    return config;
   }
 
   function buildN8NHeaders(extra) {
@@ -253,6 +262,11 @@
     const bar = document.getElementById('nfx-waba-sel-bar');
     if (bar) bar.style.display = 'none';
     nfxLockForm(false);
+    if (typeof nfxDoClear === 'function') nfxDoClear();
+    if (window.nfxCancelSel) window.nfxCancelSel();
+    if (window.nfxCloseTplPreview) window.nfxCloseTplPreview();
+    const searchEl = document.getElementById('nfx-search');
+    if (searchEl) searchEl.value = '';
     setTimeout(() => { if (window.nfxView) nfxView('create'); }, 50);
   }
 
@@ -297,6 +311,11 @@
             <svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" fill="#25d366"/></svg>
             <span id="nfx-waba-sel-txt">—</span>
             <span style="margin-left:auto;cursor:pointer;color:var(--tx3);font-size:10px" onclick="nfxMostrarWabas()">trocar</span>
+          </div>
+
+          <div id="nfx-edit-banner" style="display:none;align-items:center;gap:8px;padding:6px 10px;background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.3);border-radius:8px;font-size:11px;color:var(--bl)">
+            <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">✎ Editando <b id="nfx-edit-name"></b> <span style="opacity:.7">— nome/categoria não permitidos</span></span>
+            <button class="nfx-bs" style="flex-shrink:0;padding:4px 10px;font-size:10px" onclick="nfxCancelEdit()">Cancelar</button>
           </div>
 
           <div class="nfx-sec">
@@ -353,6 +372,7 @@
                 <input class="nfx-inp" id="nfx-hval" placeholder="Texto do cabeçalho (máx. 60 caracteres)" maxlength="60" oninput="nfxHvalChg(this)"/>
               </div>
               <div id="nfx-hmedia" style="display:none;margin-top:10px;flex-direction:column;gap:8px">
+                <div id="nfx-edit-media-note" style="display:none;padding:8px 10px;border-radius:7px;background:var(--adim);border:1px solid var(--agl);font-size:11px;color:var(--ac)"></div>
                 <div class="nfx-uz" onclick="document.getElementById('nfx-file-input').click()" style="cursor:pointer">
                   <div style="font-size:16px;margin-bottom:2px">↑</div>
                   <div style="font-size:11px;color:var(--tx2)">Clique para selecionar arquivo</div>
@@ -409,6 +429,7 @@
             <div class="nfx-sh"><div class="nfx-sn">6</div><div class="nfx-st">Botões <span style="font-size:10px;color:var(--tx3);font-weight:400">(opcional — máx. 10)</span></div></div>
             <div class="nfx-sb">
               <div class="nfx-bl" id="nfx-bl"></div>
+              <div id="nfx-btn-form" style="display:none"></div>
               <div class="nfx-abr">
                 <button class="nfx-ab" onclick="nfxAddBtn('QUICK_REPLY')">+ Personalizado</button>
                 <button class="nfx-ab" onclick="nfxAddBtn('URL')">+ Acessar site</button>
@@ -430,7 +451,8 @@
         <div class="nfx-lv" id="nfx-lv">
           <div class="nfx-ltb">
             <div><div class="nfx-title">Meus templates</div><div class="nfx-sub">Templates da sua conta WhatsApp Business</div></div>
-            <div style="display:flex;gap:8px">
+            <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+              <span id="nfx-version-tag" style="font-size:10px;font-family:monospace;color:var(--tx3);background:var(--sf3);border:1px solid var(--bd2);border-radius:10px;padding:2px 8px;flex-shrink:0"></span>
               <button class="nfx-bs" id="nfx-sync-btn" onclick="nfxSyncTemplates()">
                 <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 Sincronizar modelos
@@ -441,9 +463,18 @@
               </button>
             </div>
           </div>
+          <div id="nfx-sync-feedback" style="display:none;text-align:right;font-size:11px;padding:2px 0 6px"></div>
+          <div style="position:relative">
+            <input class="nfx-inp" id="nfx-search" placeholder="Buscar template por nome..." oninput="nfxFilterTemplates(this.value)" style="padding-left:30px"/>
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--tx3);pointer-events:none"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35" stroke-linecap="round"/></svg>
+          </div>
           <div class="nfx-del-bar" id="nfx-del-bar">
             <span class="nfx-del-info" id="nfx-del-info">0 selecionados</span>
             <button class="nfx-del-cancel" onclick="nfxCancelSel()">Cancelar</button>
+            <button class="nfx-edit-btn" id="nfx-edit-sel-btn" style="display:none" onclick="nfxStartEdit()">
+              <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Editar
+            </button>
             <button class="nfx-del-btn" onclick="nfxConfirmDelete()">
               <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
               Excluir selecionados
@@ -465,15 +496,18 @@
             </div>
             <div class="nfx-pchat">
               <div class="nfx-bub">
-                <div id="nfx-ph2" class="nfx-wht" style="display:none"></div>
-                <div class="nfx-wt" id="nfx-pb">Digite o corpo da mensagem...</div>
-                <div id="nfx-pf" class="nfx-wft" style="display:none"></div>
-                <div class="nfx-wfr">
-                  <span>agora</span>
-                  <svg width="14" height="10" viewBox="0 0 14 10" fill="#53bdeb"><path d="M1 5l3 3 5-7M6 8l2-2 3-3"/></svg>
+                <div id="nfx-phmedia" class="nfx-whm" style="display:none"></div>
+                <div class="nfx-btxt">
+                  <div id="nfx-ph2" class="nfx-wht" style="display:none"></div>
+                  <div class="nfx-wt" id="nfx-pb">Digite o corpo da mensagem...</div>
+                  <div id="nfx-pf" class="nfx-wft" style="display:none"></div>
+                  <div class="nfx-wfr">
+                    <span>agora</span>
+                    <svg width="14" height="10" viewBox="0 0 14 10" fill="#53bdeb"><path d="M1 5l3 3 5-7M6 8l2-2 3-3"/></svg>
+                  </div>
                 </div>
+                <div id="nfx-pbtns"></div>
               </div>
-              <div class="nfx-pbtns-wrap"><div id="nfx-pbtns"></div></div>
             </div>
           </div>
           <div id="nfx-vbox" style="display:none">
@@ -483,7 +517,6 @@
         </div>
       </div>
     </div>
-
     <!-- Modal confirmação delete -->
     <div id="nfx-del-ov">
       <div id="nfx-del-m" class="${tc()}">
@@ -506,6 +539,15 @@
             Confirmar exclusão
           </button>
         </div>
+      </div>
+    </div>
+    <!-- Modal preview do template -->
+    <div id="nfx-tplprev-ov" onclick="if(event.target===this) nfxCloseTplPreview()">
+      <div id="nfx-tplprev-m">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:6px">
+          <button onclick="nfxCloseTplPreview()" style="background:none;border:none;cursor:pointer;color:#999;font-size:16px;line-height:1;padding:2px">✕</button>
+        </div>
+        <div id="nfx-tplprev-body"></div>
       </div>
     </div>
     `;
@@ -691,20 +733,21 @@
     const nameEl   = document.getElementById('nfx-file-name');
     const statusEl = document.getElementById('nfx-file-status');
     window._nfxSelectedFile = file;
-    window._nfxMediaHandle = null;
     if (nameEl) nameEl.textContent = file.name;
     if (statusEl) { statusEl.textContent = 'Arquivo selecionado'; statusEl.style.color = 'var(--tx3)'; }
     if (info) info.style.display = 'flex';
+    const editNote = document.getElementById('nfx-edit-media-note');
+    if (editNote) editNote.style.display = 'none';
     if (file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onload = e => {
-        const ph2 = document.getElementById('nfx-ph2');
-        if (ph2) { ph2.style.display='block'; ph2.innerHTML=`<div class="nfx-whm"><img src="${e.target.result}" alt="preview"/></div>`; }
+        const phmedia = document.getElementById('nfx-phmedia');
+        if (phmedia) { phmedia.style.display='block'; phmedia.innerHTML=`<img src="${e.target.result}" alt="preview"/>`; }
       };
       reader.readAsDataURL(file);
     } else {
-      const ph2 = document.getElementById('nfx-ph2');
-      if (ph2) { ph2.style.display='block'; ph2.innerHTML=`<div class="nfx-whm"><div class="nfx-whm-ph">📎 ${esc(file.name)}</div></div>`; }
+      const phmedia = document.getElementById('nfx-phmedia');
+      if (phmedia) { phmedia.style.display='block'; phmedia.innerHTML=`<div class="nfx-whm-ph">${SVG_DOC}</div>`; }
     }
     updatePreview();
   };
@@ -714,12 +757,25 @@
     if (input) input.value = '';
     const info = document.getElementById('nfx-file-info');
     if (info) info.style.display = 'none';
-    window._nfxMediaHandle = null;
     window._nfxSelectedFile = null;
-    const ph2 = document.getElementById('nfx-ph2');
-    if (ph2) { ph2.style.display='none'; ph2.innerHTML=''; }
+    const phmedia = document.getElementById('nfx-phmedia');
+    if (phmedia) { phmedia.style.display='none'; phmedia.innerHTML=''; }
+    nfxUpdateEditMediaNote();
     updatePreview();
   };
+
+  function nfxUpdateEditMediaNote() {
+    const noteEl = document.getElementById('nfx-edit-media-note');
+    if (!noteEl) return;
+    const orig = window._nfxEditMode?.originalHeader;
+    const keepingOriginal = window._nfxEditMode?.active && orig && (orig.format||'').toLowerCase() === headerType && !window._nfxSelectedFile;
+    if (keepingOriginal) {
+      noteEl.style.display = 'block';
+      noteEl.textContent = `🖼 Cabeçalho de mídia atual (${orig.format}) será mantido. Selecione um arquivo apenas se quiser substituí-lo.`;
+    } else {
+      noteEl.style.display = 'none';
+    }
+  }
 
   window.nfxHdr = function(type, el) {
     headerType = type;
@@ -729,6 +785,7 @@
     const hm = document.getElementById('nfx-hmedia');
     hm.style.display = ['image','video','document'].includes(type)?'flex':'none';
     if (!['image','video','document'].includes(type)) window.nfxClearFile();
+    nfxUpdateEditMediaNote();
     updatePreview();
   };
 
@@ -795,24 +852,236 @@
 
   window.nfxAddBtn = function(type) {
     if (buttons.length>=10) { alert('Máximo de 10 botões.'); return; }
-    const def = { QUICK_REPLY:'Resposta rápida', URL:'Acessar site' };
-    const label = prompt('Texto do botão:', def[type]||'Botão');
-    if (!label) return;
-    const b = { type, label };
-    if (type==='URL') b.url = prompt('URL:', 'https://')||'';
-    buttons.push(b); renderBtns(); updatePreview();
+    nfxOpenBtnForm({ mode:'add', type, label:'', url:'' });
   };
 
   window.nfxRmBtn = function(i) { buttons.splice(i,1); renderBtns(); updatePreview(); };
 
+  function nfxOpenBtnForm(state) {
+    window._nfxBtnFormState = state;
+    const box = document.getElementById('nfx-btn-form');
+    if (!box) return;
+    const isUrl = state.type === 'URL';
+    box.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:8px;padding:10px;background:var(--sf2);border:1px solid var(--bd);border-radius:8px;margin-bottom:8px">
+        <input class="nfx-inp" id="nfx-btnf-label" placeholder="Texto do botão" maxlength="25" value="${esc(state.label)}"/>
+        ${isUrl ? `<input class="nfx-inp" id="nfx-btnf-url" placeholder="https://..." value="${esc(state.url||'')}"/>` : ''}
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button class="nfx-bs" style="padding:6px 12px;font-size:11px" onclick="nfxCancelBtnForm()">Cancelar</button>
+          <button class="nfx-bp" style="padding:6px 14px;font-size:11px" onclick="nfxConfirmBtnForm()">${state.mode==='edit'?'Salvar':'Adicionar'}</button>
+        </div>
+      </div>`;
+    box.style.display = 'block';
+    document.getElementById('nfx-btnf-label')?.focus();
+  }
+
+  window.nfxCancelBtnForm = function() {
+    window._nfxBtnFormState = null;
+    const box = document.getElementById('nfx-btn-form');
+    if (box) { box.style.display='none'; box.innerHTML=''; }
+  };
+
+  window.nfxConfirmBtnForm = function() {
+    const state = window._nfxBtnFormState;
+    if (!state) return;
+    const label = (document.getElementById('nfx-btnf-label')?.value||'').trim();
+    if (!label) { alert('Informe o texto do botão.'); return; }
+    let url = '';
+    if (state.type === 'URL') {
+      url = (document.getElementById('nfx-btnf-url')?.value||'').trim();
+      if (!url) { alert('Informe a URL do botão.'); return; }
+    }
+    if (state.mode === 'add') {
+      buttons.push(state.type==='URL' ? {type:'URL', label, url} : {type:'QUICK_REPLY', label});
+    } else {
+      const b = buttons[state.index];
+      if (b) { b.label = label; if (state.type==='URL') b.url = url; }
+    }
+    window.nfxCancelBtnForm();
+    renderBtns();
+    updatePreview();
+  };
+
+  window.nfxMoveBtn = function(i, dir) {
+    const j = i + dir;
+    if (j < 0 || j >= buttons.length) return;
+    [buttons[i], buttons[j]] = [buttons[j], buttons[i]];
+    renderBtns();
+    updatePreview();
+  };
+
+  window.nfxEditBtn = function(i) {
+    const b = buttons[i]; if (!b) return;
+    nfxOpenBtnForm({ mode:'edit', index:i, type:b.type, label:b.label, url:b.url||'' });
+  };
+
   function nfxDoClear() {
     ['nfx-name','nfx-body','nfx-foot','nfx-hval'].forEach(id=>{ const el=document.getElementById(id); if(el){ el.value=''; el.style.borderColor=''; } });
     buttons=[]; varExamples={}; varType='none';
+    if (window.nfxCancelBtnForm) window.nfxCancelBtnForm();
     renderBtns();
     window.nfxSetVarType('none');
     window.nfxHdr('none', document.querySelector('.nfx-tt'));
     ['nfx-var-warn','nfx-var-pos-err','nfx-name-err'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
+    nfxExitEditMode();
     updatePreview();
+  }
+
+  function nfxExitEditMode() {
+    window._nfxEditMode = { active:false, templateId:null, name:null, originalHeader:null };
+    const nameEl = document.getElementById('nfx-name');
+    if (nameEl) { nameEl.readOnly = false; nameEl.style.background = ''; nameEl.style.cursor = ''; }
+    const catEl = document.getElementById('nfx-cat');
+    if (catEl) catEl.disabled = false;
+    const hval = document.getElementById('nfx-hval');
+    if (hval) hval.readOnly = false;
+    const editNote = document.getElementById('nfx-edit-media-note');
+    if (editNote) editNote.style.display = 'none';
+    const banner = document.getElementById('nfx-edit-banner');
+    if (banner) banner.style.display = 'none';
+    const submitBtn = document.getElementById('nfx-submit-btn');
+    if (submitBtn) submitBtn.innerHTML = '<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" stroke-linecap="round" stroke-linejoin="round"/></svg> Enviar para Meta';
+  }
+
+  window.nfxCancelEdit = function() {
+    nfxShowModal({
+      title: 'Cancelar edição',
+      message: 'Deseja descartar as alterações e sair do modo de edição?',
+      confirmLabel: 'Sim, cancelar',
+      cancelLabel: 'Não',
+      type: 'confirm',
+      onConfirm: nfxDoClear
+    });
+  };
+
+  window.nfxStartEdit = function() {
+    if (_selectedTemplates.length !== 1) return;
+    const name = _selectedTemplates[0];
+    const t = _loadedTemplates.find(x => x.name === name);
+    if (!t) { alert('Template não encontrado. Clique em "Atualizar" e tente novamente.'); return; }
+
+    nfxCancelSel();
+    nfxView('create');
+
+    const comps     = t.components || [];
+    const headerComp = comps.find(c => c.type === 'HEADER') || null;
+    const bodyComp   = comps.find(c => c.type === 'BODY');
+    const footComp   = comps.find(c => c.type === 'FOOTER');
+    const btnsComp   = comps.find(c => c.type === 'BUTTONS');
+
+    // Nome — travado
+    const nameEl = document.getElementById('nfx-name');
+    nameEl.value = t.name;
+    nameEl.readOnly = true;
+    nameEl.style.background = 'var(--sf3)';
+    nameEl.style.cursor = 'not-allowed';
+    const nameErr = document.getElementById('nfx-name-err');
+    if (nameErr) nameErr.style.display = 'none';
+
+    // Categoria — travada
+    const catEl = document.getElementById('nfx-cat');
+    catEl.value = t.category;
+    catEl.disabled = true;
+
+    // Idioma
+    const langEl = document.getElementById('nfx-lang');
+    if (langEl) langEl.value = t.language || 'pt_BR';
+
+    // Cabeçalho — tipo livre para edição (Meta aceita trocar o tipo de cabeçalho)
+    document.querySelectorAll('.nfx-tt').forEach(el => el.classList.remove('active'));
+    window._nfxSelectedFile = null;
+    if (headerComp) {
+      const fmt = (headerComp.format || 'TEXT').toLowerCase();
+      headerType = fmt;
+      const tabEl = [...document.querySelectorAll('.nfx-tt')].find(el => el.getAttribute('onclick')?.includes(`nfxHdr('${fmt}'`));
+      if (tabEl) tabEl.classList.add('active');
+      if (fmt === 'text') {
+        document.getElementById('nfx-htxt').style.display = 'block';
+        document.getElementById('nfx-hmedia').style.display = 'none';
+        const hval = document.getElementById('nfx-hval');
+        hval.value = headerComp.text || '';
+        hval.readOnly = false;
+      } else {
+        document.getElementById('nfx-htxt').style.display = 'none';
+        document.getElementById('nfx-hmedia').style.display = 'flex';
+      }
+    } else {
+      headerType = 'none';
+      const noneTab = document.querySelector('.nfx-tt');
+      if (noneTab) noneTab.classList.add('active');
+      document.getElementById('nfx-htxt').style.display = 'none';
+      document.getElementById('nfx-hmedia').style.display = 'none';
+    }
+
+    window._nfxEditMode = { active:true, templateId: t.id, name: t.name, originalHeader: headerComp };
+    nfxUpdateEditMediaNote();
+
+    // Corpo
+    const bodyEl = document.getElementById('nfx-body');
+    bodyEl.value = bodyComp?.text || '';
+    varExamples = {};
+    const vars = [...new Set((bodyEl.value.match(/\{\{\d+\}\}/g)||[]))];
+    if (bodyComp?.example?.body_text?.[0]) {
+      vars.forEach((v,i) => { varExamples[v] = bodyComp.example.body_text[0][i] || ''; });
+    }
+    varType = vars.length ? 'number' : 'none';
+    window.nfxSetVarType(varType);
+    nfxBodyChg(bodyEl);
+
+    // Rodapé
+    const footEl = document.getElementById('nfx-foot');
+    footEl.value = footComp?.text || '';
+
+    // Botões
+    buttons = (btnsComp?.buttons || []).map(b => ({ type: b.type, label: b.text, url: b.url || '' }));
+    renderBtns();
+
+    // Banner + botão de envio
+    const banner = document.getElementById('nfx-edit-banner');
+    if (banner) banner.style.display = 'flex';
+    const editNameEl = document.getElementById('nfx-edit-name');
+    if (editNameEl) editNameEl.textContent = t.name;
+    const submitBtn = document.getElementById('nfx-submit-btn');
+    if (submitBtn) submitBtn.innerHTML = '<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" stroke-linecap="round" stroke-linejoin="round"/></svg> Salvar alterações';
+
+    updatePreview();
+  };
+
+  function buildEditComps() {
+    const body = document.getElementById('nfx-body').value;
+    const foot = document.getElementById('nfx-foot')?.value||'';
+    const comps=[];
+
+    if (headerType === 'text') {
+      const hdr = document.getElementById('nfx-hval')?.value||'';
+      if (hdr) comps.push({type:'HEADER', format:'TEXT', text:hdr});
+    } else if (['image','video','document'].includes(headerType)) {
+      // Se não há arquivo novo selecionado, mantemos o cabeçalho de mídia original
+      // (só entra aqui quando o tipo bate com o original — validado antes do envio).
+      // Quando há arquivo novo, o header é resolvido no N8N via upload + handle,
+      // então não adicionamos nada aqui.
+      if (!window._nfxSelectedFile) {
+        const orig = window._nfxEditMode?.originalHeader;
+        if (orig && (orig.format||'').toLowerCase() === headerType) {
+          comps.push(orig);
+        }
+      }
+    }
+    // headerType 'none' -> sem header
+
+    if (body) {
+      const vars=[...new Set((body.match(/\{\{\d+\}\}/g)||[]))];
+      const bc={type:'BODY',text:body};
+      if (vars.length) bc.example={body_text:[vars.map(v=>varExamples[v]||'exemplo')]};
+      comps.push(bc);
+    }
+    if (foot) comps.push({type:'FOOTER',text:foot});
+    if (buttons.length) comps.push({type:'BUTTONS',buttons:buttons.map(b=>{
+      const o={type:b.type,text:b.label};
+      if(b.url)o.url=b.url;
+      return o;
+    })});
+    return comps;
   }
 
   function nfxShowModal({ title, message, confirmLabel, cancelLabel, onConfirm, onCancel, type }) {
@@ -876,6 +1145,7 @@
       }
       return;
     }
+    const editMode = !!window._nfxEditMode?.active;
     const name = (document.getElementById('nfx-name').value||'').trim().replace(/\s/g,'_').toLowerCase();
     const body = (document.getElementById('nfx-body').value||'').trim();
     if (!name) { alert('Informe o nome do template.'); return; }
@@ -893,52 +1163,88 @@
     const dupBtns = btnLabels.filter((l,i) => btnLabels.indexOf(l) !== i);
     if (dupBtns.length > 0) { alert('Botões não podem ter o mesmo texto. Altere o nome de cada botão.'); return; }
 
+    if (editMode && ['image','video','document'].includes(headerType)) {
+      const orig = window._nfxEditMode.originalHeader;
+      const keepingOriginal = orig && (orig.format||'').toLowerCase() === headerType && !window._nfxSelectedFile;
+      if (!keepingOriginal && !window._nfxSelectedFile) {
+        alert('Selecione um arquivo para o novo cabeçalho de mídia (ou volte ao cabeçalho original).');
+        return;
+      }
+    }
+
     const btn = document.getElementById('nfx-submit-btn');
     btn.disabled = true;
-    btn.innerHTML = `<span class="nfx-spin"></span> Enviando...`;
+    btn.innerHTML = editMode ? `<span class="nfx-spin"></span> Salvando...` : `<span class="nfx-spin"></span> Enviando...`;
 
     try {
-      const payload = {
-        name,
-        language: document.getElementById('nfx-lang')?.value || 'pt_BR',
-        category: document.getElementById('nfx-cat').value,
-        headerType,
-        components: buildComps(),
-        buttons,
-        varExamples
-      };
-
       let result;
-      if (['image','video','document'].includes(headerType) && window._nfxSelectedFile) {
-        btn.innerHTML = `<span class="nfx-spin"></span> Enviando mídia...`;
-        result = await n8nRequest('create_template', payload, window._nfxSelectedFile);
-      } else {
-        result = await n8nRequest('create_template', payload);
-      }
 
-      const tplId = result.template_id || result.id || '-';
-      const tplStatus = result.status || 'PENDING';
-      nfxShowModal({
-        title: 'Template enviado!',
-        message: `<strong>${name}</strong> foi enviado para aprovação da Meta.<br><br><span style="font-size:11px;color:var(--tx3,#9aa0ad)">ID: ${tplId} &nbsp;•&nbsp; Status: ${tplStatus}</span>`,
-        confirmLabel: 'OK',
-        type: 'success',
-        onConfirm: () => {
-          nfxShowModal({
-            title: 'Limpar formulário?',
-            message: 'Deseja limpar os campos para criar um novo template?',
-            confirmLabel: 'Sim, limpar',
-            cancelLabel: 'Não',
-            type: 'confirm',
-            onConfirm: nfxDoClear
-          });
+      if (editMode) {
+        const payload = {
+          template_id: window._nfxEditMode.templateId,
+          headerType,
+          components: buildEditComps()
+        };
+
+        if (['image','video','document'].includes(headerType) && window._nfxSelectedFile) {
+          btn.innerHTML = `<span class="nfx-spin"></span> Enviando mídia...`;
+          result = await n8nRequest('edit_template', payload, window._nfxSelectedFile);
+        } else {
+          result = await n8nRequest('edit_template', payload);
         }
-      });
+
+        nfxShowModal({
+          title: 'Alterações salvas!',
+          message: `<strong>${name}</strong> foi atualizado. A Meta pode levar alguns minutos para reprocessar a aprovação do template.`,
+          confirmLabel: 'OK',
+          type: 'success',
+          onConfirm: () => { nfxDoClear(); nfxView('list'); }
+        });
+      } else {
+        const payload = {
+          name,
+          language: document.getElementById('nfx-lang')?.value || 'pt_BR',
+          category: document.getElementById('nfx-cat').value,
+          headerType,
+          components: buildComps(),
+          buttons,
+          varExamples
+        };
+
+        if (['image','video','document'].includes(headerType) && window._nfxSelectedFile) {
+          btn.innerHTML = `<span class="nfx-spin"></span> Enviando mídia...`;
+          result = await n8nRequest('create_template', payload, window._nfxSelectedFile);
+        } else {
+          result = await n8nRequest('create_template', payload);
+        }
+
+        const tplId = result.template_id || result.id || '-';
+        const tplStatus = result.status || 'PENDING';
+        nfxShowModal({
+          title: 'Template enviado!',
+          message: `<strong>${name}</strong> foi enviado para aprovação da Meta.<br><br><span style="font-size:11px;color:var(--tx3,#9aa0ad)">ID: ${tplId} &nbsp;•&nbsp; Status: ${tplStatus}</span>`,
+          confirmLabel: 'OK',
+          type: 'success',
+          onConfirm: () => {
+            nfxShowModal({
+              title: 'Limpar formulário?',
+              message: 'Deseja limpar os campos para criar um novo template?',
+              confirmLabel: 'Sim, limpar',
+              cancelLabel: 'Não',
+              type: 'confirm',
+              onConfirm: nfxDoClear
+            });
+          }
+        });
+      }
     } catch(e) {
-      alert(`✗ Erro ao enviar: ${e.message}`);
+      alert(`✗ Erro ao ${editMode ? 'salvar' : 'enviar'}: ${e.message}`);
     } finally {
       btn.disabled = false;
-      btn.innerHTML = `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" stroke-linecap="round" stroke-linejoin="round"/></svg> Enviar para Meta`;
+      const stillEditing = !!window._nfxEditMode?.active;
+      btn.innerHTML = stillEditing
+        ? `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" stroke-linecap="round" stroke-linejoin="round"/></svg> Salvar alterações`
+        : `<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" stroke-linecap="round" stroke-linejoin="round"/></svg> Enviar para Meta`;
     }
   };
 
@@ -989,11 +1295,14 @@
       if (btn) { btn.disabled=false; btn.innerHTML='<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round"/></svg> Sincronizar modelos'; }
 
       // Mostra feedback temporário
-      const info = document.createElement('div');
-      info.style.cssText = 'font-size:11px;color:var(--ac);margin-top:4px;text-align:right';
-      info.textContent = msg;
-      btn.parentNode.appendChild(info);
-      setTimeout(() => info.remove(), 4000);
+      const info = document.getElementById('nfx-sync-feedback');
+      if (info) {
+        info.style.color = 'var(--ac)';
+        info.textContent = msg;
+        info.style.display = 'block';
+        clearTimeout(window._nfxSyncFeedbackTimer);
+        window._nfxSyncFeedbackTimer = setTimeout(() => { info.style.display = 'none'; }, 4000);
+      }
 
     } catch(e) {
       alert(`✗ Erro ao sincronizar: ${e.message}`);
@@ -1012,9 +1321,12 @@
     try {
       const d = await n8nRequest('list_templates', {});
       const tpls = d.data || d.templates || [];
+      _loadedTemplates = tpls;
+      const searchEl = document.getElementById('nfx-search');
+      if (searchEl) searchEl.value = '';
       const lb = document.getElementById('nfx-lb');
       if (lb) lb.textContent = tpls.length;
-      container.innerHTML = tpls.length ? tpls.map(tplCard).join('') : '<div class="nfx-ld">Nenhum template encontrado.</div>';
+      nfxRenderTemplateList(tpls);
     } catch(e) {
       container.innerHTML=`<div class="nfx-ld" style="color:var(--red)">Erro: ${esc(e.message)}</div>`;
     } finally {
@@ -1022,14 +1334,44 @@
     }
   };
 
+  function nfxRenderTemplateList(tpls) {
+    const container = document.getElementById('nfx-tlist');
+    if (!container) return;
+    container.innerHTML = tpls.length ? tpls.map(tplCard).join('') : '<div class="nfx-ld">Nenhum template encontrado.</div>';
+  }
+
+  window.nfxFilterTemplates = function(query) {
+    const q = (query||'').trim().toLowerCase();
+    const filtered = q ? _loadedTemplates.filter(t => (t.name||'').toLowerCase().includes(q)) : _loadedTemplates;
+    nfxCancelSel();
+    if (!filtered.length) {
+      document.getElementById('nfx-tlist').innerHTML = q
+        ? `<div class="nfx-ld">Nenhum template encontrado com "${esc(query)}".</div>`
+        : '<div class="nfx-ld">Nenhum template encontrado.</div>';
+      return;
+    }
+    nfxRenderTemplateList(filtered);
+  };
+
   function renderBtns() {
     const list = document.getElementById('nfx-bl'); if (!list) return;
     const tl = { QUICK_REPLY:'personalizado', URL:'link' };
     list.innerHTML = buttons.map((b,i)=>`
       <div class="nfx-br">
+        <div style="display:flex;flex-direction:column;gap:2px;flex-shrink:0">
+          <button class="nfx-bact" title="Mover para cima" onclick="nfxMoveBtn(${i},-1)" ${i===0?'disabled':''}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+          </button>
+          <button class="nfx-bact" title="Mover para baixo" onclick="nfxMoveBtn(${i},1)" ${i===buttons.length-1?'disabled':''}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+        </div>
         <span class="nfx-brl">${esc(b.label)}${b.url?' → '+esc(b.url):''}</span>
         <span class="nfx-brt ${b.type==='QUICK_REPLY'?'nfx-btq':'nfx-btc'}">${tl[b.type]||b.type}</span>
-        <button class="nfx-bdel" onclick="nfxRmBtn(${i})">×</button>
+        <button class="nfx-bact" title="Editar" onclick="nfxEditBtn(${i})">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="nfx-bdel" title="Remover" onclick="nfxRmBtn(${i})">×</button>
       </div>`).join('');
   }
 
@@ -1064,37 +1406,43 @@
   }
 
   function updatePreview() {
-    const hdr   = document.getElementById('nfx-hval')?.value||'';
-    const body  = document.getElementById('nfx-body')?.value||'';
-    const foot  = document.getElementById('nfx-foot')?.value||'';
-    const ph2   = document.getElementById('nfx-ph2');
-    const pf    = document.getElementById('nfx-pf');
-    const pbtns = document.getElementById('nfx-pbtns');
-    const vbox  = document.getElementById('nfx-vbox');
-    const vlist = document.getElementById('nfx-vlist');
+    const hdr     = document.getElementById('nfx-hval')?.value||'';
+    const body    = document.getElementById('nfx-body')?.value||'';
+    const foot    = document.getElementById('nfx-foot')?.value||'';
+    const ph2     = document.getElementById('nfx-ph2');
+    const phmedia = document.getElementById('nfx-phmedia');
+    const pf      = document.getElementById('nfx-pf');
+    const pbtns   = document.getElementById('nfx-pbtns');
+    const vbox    = document.getElementById('nfx-vbox');
+    const vlist   = document.getElementById('nfx-vlist');
 
     if (ph2) {
       if (headerType==='text' && hdr) {
         ph2.style.display='block';
-        ph2.innerHTML=`<div class="nfx-whtxt">${esc(hdr)}</div>`;
-      } else if (['image','video','document'].includes(headerType)) {
-        ph2.style.display='block';
-        if (!ph2.querySelector('img,.nfx-whm')) {
-          const ico={image:'🖼',video:'▶',document:'📄'};
-          ph2.innerHTML=`<div class="nfx-whm"><div class="nfx-whm-ph">${ico[headerType]}</div></div>`;
-        }
+        ph2.textContent = hdr;
       } else {
         ph2.style.display='none';
+      }
+    }
+
+    if (phmedia) {
+      if (['image','video','document'].includes(headerType)) {
+        phmedia.style.display='block';
+        if (!phmedia.querySelector('img')) {
+          const icoMap = {image:SVG_IMG, video:SVG_VIDEO, document:SVG_DOC};
+          phmedia.innerHTML = `<div class="nfx-whm-ph">${icoMap[headerType]||SVG_IMG}</div>`;
+        }
+      } else {
+        phmedia.style.display='none';
+        phmedia.innerHTML='';
       }
     }
 
     renderPreviewBody();
     if (pf) { pf.style.display=foot?'block':'none'; pf.textContent=foot; }
     if (pbtns) {
-      const ico={URL:'🔗 ',QUICK_REPLY:''};
-      pbtns.innerHTML=buttons.map(b=>`<button class="nfx-wb">${ico[b.type]||''}${esc(b.label)}</button>`).join('');
-      const bub = document.querySelector('.nfx-bub');
-      if (bub) bub.classList.toggle('nfx-has-btns', buttons.length > 0);
+      const icoMap = {URL:SVG_LINK, QUICK_REPLY:SVG_REPLY};
+      pbtns.innerHTML=buttons.map(b=>`<button class="nfx-wb">${icoMap[b.type]||SVG_REPLY}${esc(b.label)}</button>`).join('');
     }
 
     const vars=[...new Set((body.match(/\{\{\d+\}\}/g)||[]))].sort();
@@ -1170,8 +1518,10 @@
     }
     const bar = document.getElementById('nfx-del-bar');
     const info = document.getElementById('nfx-del-info');
+    const editBtn = document.getElementById('nfx-edit-sel-btn');
     if (bar) bar.classList.toggle('visible', _selectedTemplates.length > 0);
     if (info) info.textContent = `${_selectedTemplates.length} selecionado(s)`;
+    if (editBtn) editBtn.style.display = _selectedTemplates.length === 1 ? 'inline-flex' : 'none';
   };
 
   window.nfxCancelSel = function() {
@@ -1180,6 +1530,8 @@
     document.querySelectorAll('.nfx-tc').forEach(c => c.classList.remove('selected'));
     const bar = document.getElementById('nfx-del-bar');
     if (bar) bar.classList.remove('visible');
+    const editBtn = document.getElementById('nfx-edit-sel-btn');
+    if (editBtn) editBtn.style.display = 'none';
   };
 
   window.nfxConfirmDelete = function() {
@@ -1226,9 +1578,23 @@
   function tplCard(t) {
     const sm={APPROVED:'Aprovado',PENDING:'Pendente',REJECTED:'Rejeitado',PAUSED:'Pausado'};
     const sc={APPROVED:'AP',PENDING:'PE',REJECTED:'RE',PAUSED:'PA'};
-    const bc=(t.components||[]).find(c=>c.type==='BODY');
-    const fullText = bc ? bc.text : '';
+    const comps = t.components||[];
+    const hc=comps.find(c=>c.type==='HEADER');
+    const bc=comps.find(c=>c.type==='BODY');
+    const fc=comps.find(c=>c.type==='FOOTER');
+    const btc=comps.find(c=>c.type==='BUTTONS');
     const prev=bc?esc(bc.text).substring(0,80)+(bc.text.length>80?'...':''):'—';
+
+    const tipParts = [];
+    if (hc) tipParts.push(hc.format === 'TEXT' ? `[Cabeçalho] ${hc.text}` : `[Cabeçalho: ${hc.format}]`);
+    if (bc) tipParts.push(bc.text);
+    if (fc) tipParts.push(`[Rodapé] ${fc.text}`);
+    if (btc && btc.buttons?.length) {
+      const btnLines = btc.buttons.map(b => `• ${b.text}${b.type==='URL' && b.url ? ` (${b.url})` : ''}`);
+      tipParts.push(`[Botões]\n${btnLines.join('\n')}`);
+    }
+    const fullTip = tipParts.join('\n\n');
+
     const reason=t.rejected_reason&&t.rejected_reason!=='NONE'?`<div class="nfx-rr">✗ Motivo: ${esc(t.rejected_reason)}</div>`:'';
     const safeName = esc(t.name).replace(/'/g,"\\'");
     return `<div class="nfx-tc" id="nfx-card-${esc(t.name)}">
@@ -1236,16 +1602,80 @@
       <div class="nfx-ti">
         <div class="nfx-tn">${esc(t.name)}</div>
         <div class="nfx-tm">${esc(t.category)} • ${esc(t.language)}</div>
-        <div class="nfx-tm" style="margin-top:3px;font-size:10px" title="${esc(fullText)}">${prev}</div>
+        <div class="nfx-tm" style="margin-top:3px;font-size:10px" title="${esc(fullTip)}">${prev}</div>
         ${reason}
       </div>
+      <button class="nfx-tc-eye" title="Preview" onclick="event.stopPropagation();nfxShowTplPreview('${safeName}')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
       <span class="nfx-sb2 nfx-${sc[t.status]||'PA'}">${sm[t.status]||t.status}</span>
     </div>`;
   }
 
+  function renderPhonePreviewHTML(comps) {
+    const hc  = (comps||[]).find(c=>c.type==='HEADER');
+    const bc  = (comps||[]).find(c=>c.type==='BODY');
+    const fc  = (comps||[]).find(c=>c.type==='FOOTER');
+    const btc = (comps||[]).find(c=>c.type==='BUTTONS');
+
+    let mediaHtml = '';
+    if (hc && hc.format && hc.format !== 'TEXT') {
+      const icoMap = {IMAGE:SVG_IMG, VIDEO:SVG_VIDEO, DOCUMENT:SVG_DOC};
+      mediaHtml = `<div class="nfx-whm"><div class="nfx-whm-ph">${icoMap[hc.format]||SVG_IMG}</div></div>`;
+    }
+    const headerTextHtml = (hc && hc.format === 'TEXT') ? `<div class="nfx-wht">${esc(hc.text||'')}</div>` : '';
+
+    let bodyHtml = '—';
+    if (bc && bc.text) {
+      bodyHtml = esc(bc.text)
+        .replace(/\*(.+?)\*/g,'<b>$1</b>')
+        .replace(/\_(.+?)\_/g,'<em>$1</em>')
+        .replace(/\n/g,'<br>');
+    }
+    const footHtml = fc && fc.text ? `<div class="nfx-wft">${esc(fc.text)}</div>` : '';
+
+    let btnsHtml = '';
+    if (btc && btc.buttons?.length) {
+      const icoMap = {URL:SVG_LINK, QUICK_REPLY:SVG_REPLY};
+      btnsHtml = btc.buttons.map(b=>`<button class="nfx-wb">${icoMap[b.type]||SVG_REPLY}${esc(b.text)}</button>`).join('');
+    }
+
+    return `<div class="nfx-phone">
+      <div class="nfx-pbar"><div><div class="nfx-pbar-title">Prévia do modelo</div><div class="nfx-pbar-sub">WhatsApp Business</div></div></div>
+      <div class="nfx-pchat">
+        <div class="nfx-bub">
+          ${mediaHtml}
+          <div class="nfx-btxt">
+            ${headerTextHtml}
+            <div class="nfx-wt">${bodyHtml}</div>
+            ${footHtml}
+            <div class="nfx-wfr"><span>agora</span><svg width="14" height="10" viewBox="0 0 14 10" fill="#53bdeb"><path d="M1 5l3 3 5-7M6 8l2-2 3-3"/></svg></div>
+          </div>
+          <div>${btnsHtml}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  window.nfxShowTplPreview = function(name) {
+    const t = _loadedTemplates.find(x => x.name === name);
+    if (!t) return;
+    const body = document.getElementById('nfx-tplprev-body');
+    if (body) body.innerHTML = renderPhonePreviewHTML(t.components || []);
+    const ov = document.getElementById('nfx-tplprev-ov');
+    if (ov) ov.classList.add('open');
+  };
+
+  window.nfxCloseTplPreview = function() {
+    const ov = document.getElementById('nfx-tplprev-ov');
+    if (ov) ov.classList.remove('open');
+  };
+
   // Init
   const s=document.getElementById('nfx-stxt');
   if (s) s.textContent='Sincronizado';
+  const vt=document.getElementById('nfx-version-tag');
+  if (vt) vt.textContent=VERSION;
   const obs=new MutationObserver(applyTheme);
   obs.observe(document.documentElement,{attributes:true,attributeFilter:['class']});
   obs.observe(document.body,{attributes:true,attributeFilter:['class']});
