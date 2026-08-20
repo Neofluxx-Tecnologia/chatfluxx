@@ -15,7 +15,7 @@
     { id: 'disparo_campanha',   label: 'Disparo Campanha',       type: 'modal',  adminOnly: true,  url: 'https://webhooks.neofluxx.com/form/65ae30a5-3e39-4e55-b932-44c038d009ea' },
     { id: 'etiquetar_contatos', label: 'Etiquetar Contatos',     type: 'auto',   adminOnly: false, url: 'https://raw.githubusercontent.com/Neofluxx-Tecnologia/chatfluxx/refs/heads/main/scripts/etiquetar_contatos.js' },
     { id: 'anexar_imagens',     label: 'Anexar Imagens',         type: 'auto',   adminOnly: false, url: 'https://raw.githubusercontent.com/Neofluxx-Tecnologia/chatfluxx/refs/heads/main/scripts/template_anexar_imagens.js' },
-    { id: 'conversor_contatos', label: 'Conversor de Contatos',  type: 'script', adminOnly: true,  url: 'https://raw.githubusercontent.com/Neofluxx-Tecnologia/chatfluxx/refs/heads/main/scripts/conversor_contatos.js' },
+    { id: 'conversor_contatos', label: 'Conversor de Contatos',  type: 'script', adminOnly: false,  url: 'https://raw.githubusercontent.com/Neofluxx-Tecnologia/chatfluxx/refs/heads/main/scripts/conversor_contatos.js' },
 
   ];
 
