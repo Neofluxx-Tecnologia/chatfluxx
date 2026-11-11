@@ -5,7 +5,7 @@
   if (window.__nfxConversor_v1) return;
   window.__nfxConversor_v1 = true;
 
-  const VERSION = 'v3.8';
+  const VERSION = 'v3.9';
   const log = (...a) => console.log('[CW-B2-TOOL]', ...a);
   const wait = ms => new Promise(r => setTimeout(r, ms));
   const uniq = arr => [...new Set((arr || []).map(s => (s || '').trim()).filter(Boolean))];
@@ -14,6 +14,8 @@
   let savedMapping = null;
   let savedLabel = null;
   let isImporting = false;
+  let extraDelay = 0;
+  let failedContacts = [];
 
   const LIMIT_MAX = 1000;
   const LIMIT_BATCH = 500;
@@ -29,8 +31,23 @@
     const acc = accountId();
     if (!acc) throw new Error('AccountId não detectado.');
     const url = `/api/v1/accounts/${acc}/${path}`;
-    const resp = await window.axios({ url, method: method.toLowerCase(), data: body || undefined, withCredentials: true });
-    return resp.data ?? {};
+    for (let attempt = 0; ; attempt++) {
+      try {
+        const resp = await window.axios({ url, method: method.toLowerCase(), data: body || undefined, withCredentials: true });
+        return resp.data ?? {};
+      } catch (e) {
+        // 429 = limite de requisições: espera e tenta de novo (até 3x), aumentando a pausa geral
+        if (e?.response?.status === 429 && attempt < 3) {
+          const ra = parseInt(e.response.headers?.['retry-after']);
+          const waitMs = ra > 0 ? ra * 1000 : 3000 * Math.pow(2, attempt);
+          extraDelay = Math.min(extraDelay + 300, 3000);
+          log(`429 recebido, aguardando ${waitMs}ms (tentativa ${attempt + 1}/3)`);
+          await wait(waitMs);
+          continue;
+        }
+        throw e;
+      }
+    }
   }
 
   async function fetchLabels() {
@@ -504,6 +521,7 @@
             </div>
             <div class="nfx-actions" id="import-actions">
               <button class="nfx-btn-primary" id="btn-confirm-import">☁ Confirmar importação</button>
+              <button class="nfx-btn-primary" id="btn-retry-errors" style="display:none;">↻ Reimportar só os com erro</button>
               <button class="nfx-btn-secondary" id="btn-back">← Voltar</button>
             </div>
             <div class="nfx-version">${VERSION}</div>
@@ -716,7 +734,7 @@
     modal.querySelector('#btn-back').disabled = false;
   }
 
-  async function startImport(modal) {
+  async function startImport(modal, retryList = null) {
     const m = savedMapping || getMapping(modal);
     const labelInfo = savedLabel || getActiveLabel(modal);
     shouldCancel = false;
@@ -738,7 +756,7 @@
       }
     }
 
-    const contacts = deduped.map((r, idx) => {
+    const contacts = retryList ? retryList : deduped.map((r, idx) => {
       const labelVal = labelInfo.type === 'column'
         ? normalizeLabel(r[parseInt(m['col-labels'])] || '')
         : labelInfo.value;
@@ -756,6 +774,12 @@
     if (!contacts.length) return;
 
     isImporting = true;
+    extraDelay = 0;
+    failedContacts = [];
+    const retryBtn0 = modal.querySelector('#btn-retry-errors');
+    if (retryBtn0) retryBtn0.style.display = 'none';
+    modal.querySelector('#import-result').style.display = 'none';
+    modal.querySelector('#errors-list').style.display = 'none';
     modal.querySelector('#btn-confirm-import').style.display = 'none';
     modal.querySelector('#btn-back').disabled = true;
     modal.querySelector('#import-progress-card').style.display = 'block';
@@ -770,8 +794,8 @@
     const total = contacts.length;
     let processed = 0, criados = 0, atualizados = 0, jatem = 0;
     const errors = [];
-    const BATCH_SIZE = total > 200 ? 1 : 2;
-    const BATCH_DELAY = total > 200 ? 600 : 350;
+    const BATCH_SIZE = 1;
+    const BATCH_DELAY = 600;
 
     for (let i = 0; i < total; i += BATCH_SIZE) {
       if (shouldCancel) break;
@@ -803,6 +827,7 @@
           }
         } catch (err) {
           errors.push(`Linha ${c.rowIndex}: ${c.name} (${c.phone_number}) — ${err.message || 'Erro'}`);
+          failedContacts.push(c);
         }
       }));
 
@@ -815,7 +840,7 @@
       modal.querySelector('#s2-atualizados').textContent = `↺ ${atualizados} atualizados`;
       modal.querySelector('#s2-jatem').textContent = `= ${jatem} já tinham`;
       modal.querySelector('#s2-erros').textContent = `✕ ${errors.length} erros`;
-      await wait(BATCH_DELAY);
+      await wait(BATCH_DELAY + extraDelay);
     }
 
     isImporting = false;
@@ -838,6 +863,11 @@
       const el = modal.querySelector('#errors-list');
       el.style.display = 'block';
       el.innerHTML = errors.map(e => `<div>• ${e}</div>`).join('');
+      const retryBtn = modal.querySelector('#btn-retry-errors');
+      if (retryBtn && !shouldCancel) {
+        retryBtn.textContent = `↻ Reimportar só os ${failedContacts.length} com erro`;
+        retryBtn.style.display = 'flex';
+      }
     }
 
     modal.querySelector('#btn-back').disabled = false;
@@ -1035,12 +1065,16 @@
 
     // Botões step import
     modal.querySelector('#btn-confirm-import').addEventListener('click', () => startImport(modal));
+    modal.querySelector('#btn-retry-errors').addEventListener('click', () => {
+      if (failedContacts.length) startImport(modal, failedContacts.slice());
+    });
     modal.querySelector('#btn-cancel').addEventListener('click', () => { shouldCancel = true; });
     modal.querySelector('#btn-back').addEventListener('click', () => {
       modal.querySelector('#nfx-step-import').style.display = 'none';
       modal.querySelector('#nfx-step-map').style.display = 'block';
       modal.querySelector('#import-result').style.display = 'none';
       modal.querySelector('#import-progress-card').style.display = 'none';
+      modal.querySelector('#btn-retry-errors').style.display = 'none';
       modal.querySelector('#btn-confirm-import').style.display = 'flex';
       modal.querySelector('#import-actions').style.display = 'flex';
       modal.querySelector('#btn-back').textContent = '← Voltar';
